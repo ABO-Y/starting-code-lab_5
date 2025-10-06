@@ -114,12 +114,17 @@ function toggleDropdown(button) {
   const dropdownMenu = button.nextElementSibling;
   dropdownMenu.classList.toggle("show");
 
-  // Close dropdown when clicking outside
-  window.onclick = function (e) {
-    if (!e.target.matches(".dropdown-toggle")) {
-      dropdownMenu.classList.remove("show");
-    }
-  };
+  // Close dropdown when clicking outside using a document listener so we don't overwrite other handlers
+  if (dropdownMenu.classList.contains('show')) {
+    const onDocClick = function (e) {
+      if (!button.contains(e.target) && !dropdownMenu.contains(e.target)) {
+        dropdownMenu.classList.remove('show');
+        document.removeEventListener('click', onDocClick);
+      }
+    };
+    // Delay adding the listener so the opening click doesn't immediately trigger it
+    setTimeout(() => document.addEventListener('click', onDocClick), 0);
+  }
 }
 
 // Chip functionality
@@ -353,7 +358,15 @@ function changeColor(variable, color) {
   document.querySelectorAll(".color-option").forEach((option) => {
     option.classList.remove("active");
   });
-  event.target.classList.add("active");
+  // If a caller passed the element (third arg), mark it active; otherwise try to locate by style
+  // Usage: changeColor('primary', '#ff0000', this)
+  const maybeEl = arguments[2];
+  if (maybeEl && maybeEl.classList && maybeEl.classList.contains('color-option')) {
+    maybeEl.classList.add('active');
+  } else {
+    const el = document.querySelector(`.color-option[style*="${color}"]`);
+    if (el) el.classList.add('active');
+  }
 
   showToast(`Color changed to ${color}`, "success");
 }

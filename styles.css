@@ -83,44 +83,30 @@ p {
 
 /* ========== IMPLEMENTED STYLES BELOW ========== */
 
-/* Basic color tokens (kept local to avoid relying on CSS variables elsewhere) */
-:root {
-  --bg: #f7f8fa;
-  --card: #ffffff;
-  --muted: #6b7280;
-  --primary: #2563eb;
-  --success: #16a34a;
-  --warning: #d97706;
-  --info: #0891b2;
-  --danger: #dc2626;
-  --soft-border: #e6e9ee;
-}
+/* We use the CSS variables already defined at the top of this file for consistency.
+   The .dark-theme class overrides the core variables to enable theme switching. */
 
-/* Dark theme specific overrides */
 .dark-theme {
-  --bg: #0b1220;
-  --card: #0f1724;
-  --muted: #9aa6b2;
-  --soft-border: #233042;
+  /* Override the provided tokens for dark mode */
+  --body-bg: #0b1220;
+  --card-bg: #0f1724;
+  --text-color: #e6eef8;
+  --gray: #9aa6b2;
+  --border-color: #233042;
+  /* keep primary/semantic colors or tweak if desired */
 }
 
 .dark-theme .form-input,
 .dark-theme .form-select,
 .dark-theme .form-textarea {
   background-color: rgba(255,255,255,0.03);
-  color: #e6eef8;
-  border: 1px solid var(--soft-border);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
 }
 
-.dark-theme .table th {
-  background-color: rgba(255,255,255,0.03);
-}
+.dark-theme .table th { background-color: rgba(255,255,255,0.03); }
 
-.dark-theme .code-editor {
-  background-color: #071227;
-  color: #dbeafe;
-  border: 1px solid var(--soft-border);
-}
+.dark-theme .code-editor { background-color: #071227; color: var(--text-color); border: 1px solid var(--border-color); }
 
 /* Card Styles */
 .card {
@@ -178,6 +164,14 @@ p {
 .btn-success { background-color: var(--success); }
 .btn-warning { background-color: var(--warning); }
 .btn-info { background-color: var(--info); }
+
+/* Disabled button */
+.btn[disabled], .btn.disabled {
+  opacity: 0.48; cursor: not-allowed; transform: none; box-shadow: none;
+}
+
+/* Buttons with icons */
+.btn i, .btn .icon { margin-right: 8px; display: inline-block; vertical-align: middle; }
 
 .btn-outline {
   background: transparent;
@@ -315,7 +309,7 @@ input:checked + .slider-round:before { transform: translateX(20px); }
 .progress { height: 12px; background-color: #eef2ff; border-radius: 999px; margin: 8px 0; overflow: hidden; }
 .progress-bar { height: 100%; border-radius: 999px; transition: width 260ms ease; }
 .progress-primary { background: linear-gradient(90deg,var(--primary),#60a5fa); }
-.progress-success { background: linear-gradient(90deg,var(--success),#86efac); }
+.progress-success { background: linear-gradient(90deg,var(--success), rgba(76,201,240,0.8)); }
 
 /* Pagination Styles */
 .pagination { display: flex; list-style: none; padding: 0; margin: 10px 0; }
@@ -433,6 +427,11 @@ input:checked + .slider-round:before { transform: translateX(20px); }
   .btn-group { flex-direction: column; gap: 8px; }
   .nav { flex-direction: column; }
   .tab-header { flex-direction: column; }
+}
+
+/* Make component-grid responsive per challenge */
+@media (max-width: 900px) {
+  .component-grid { grid-template-columns: 1fr; }
 }
 
 /* ========== PRESERVED WIDGET STYLES ========== */
