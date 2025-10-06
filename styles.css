@@ -404,34 +404,89 @@ input:checked + .slider-round:before { transform: translateX(20px); }
 @keyframes slideIn { from { transform: translateY(8px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
 @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0) } 40% { transform: translateY(-10px) } 60% { transform: translateY(-6px) } }
 
+/* Pull tab pulse animation */
+@keyframes pullPulse {
+  0% { transform: translateY(-50%) scale(1); }
+  50% { transform: translateY(-50%) scale(1.06); }
+  100% { transform: translateY(-50%) scale(1); }
+}
+
 /* Panel Header with close button */
 .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--soft-border); padding-bottom: 8px; }
 .panel-close { background: transparent; border: none; font-size: 1rem; cursor: pointer; color: var(--muted); transition: transform 120ms ease, color 120ms ease; }
 .panel-close:hover { color: var(--danger); transform: rotate(10deg); }
 
 /* Pull tab that appears on the left edge when panel is closed */
-.panel-pull-tab { position: absolute; top: 50%; left: -36px; transform: translateY(-50%); background-color: var(--card); color: var(--text-color); padding: 8px 10px; border-radius: 6px 0 0 6px; cursor: pointer; box-shadow: 0 6px 18px rgba(22,28,41,0.08); z-index: 1400; display: flex; align-items: center; justify-content: center; transition: padding-right 120ms ease, background-color 120ms ease; }
+.panel-pull-tab { position: absolute; top: 50%; left: -36px; transform: translateY(-50%); background-color: var(--card); color: var(--text-color); padding: 8px 10px; border-radius: 6px 0 0 6px; cursor: pointer; box-shadow: 0 6px 18px rgba(22,28,41,0.08); z-index: 1400; display: flex; align-items: center; justify-content: center; transition: padding-right 120ms ease, background-color 120ms ease; box-shadow: 0 6px 18px rgba(14,30,50,0.28); animation: pullPulse 3s ease-in-out infinite; }
 .panel-pull-tab:hover { padding-right: 14px; background-color: rgba(15,23,36,0.04); }
 
 /* Customization Panel */
 .customization-panel {
-  position: fixed; top: 16px; left: 16px; width: 320px; height: calc(100% - 32px);
-  background-color: var(--card); box-shadow: 0 12px 40px rgba(2,6,23,0.12);
-  padding: 12px; overflow-y: auto;
-  /* start off-canvas and hidden */
-  transform: translateX(-360px) translateY(0) scale(1);
-  opacity: 0; pointer-events: none;
+  position: fixed;
+  right: 12px;
+  top: 12px;
+  width: 320px;
+  max-width: calc(100% - 32px);
+  height: calc(100vh - 24px);
+  background: var(--card);
+  border: 1px solid var(--soft-border);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.45);
   transition: transform 260ms cubic-bezier(.2,.9,.2,1), opacity 200ms ease;
-  z-index: 1400;
+  transform: translateX(110%);
+  opacity: 0;
+  z-index: 1200;
 }
 .customization-panel.open {
-  transform: translateX(0) translateY(0) scale(1);
-  opacity: 1; pointer-events: auto;
+  transform: translateX(0);
+  opacity: 1;
 }
-.panel-toggle { position: fixed; top: 18px; right: 18px; z-index: 1400; padding: 8px; background-color: var(--card); color: var(--text-color); border: 1px solid var(--soft-border); border-radius: 8px; cursor: pointer; }
+.panel-toggle {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 999px;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.4);
+  cursor: pointer;
+  z-index: 1300;
+}
 
-.color-option { width: 34px; height: 34px; border-radius: 6px; display: inline-block; margin: 6px; cursor: pointer; border: 2px solid transparent; }
-.color-option.active { border-color: var(--primary); }
+.panel-toggle-mobile {
+  position: fixed;
+  right: 18px;
+  bottom: 86px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.32);
+  z-index: 1300;
+}
+
+/* color option buttons in panel */
+.color-option {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 2px solid rgba(255,255,255,0.06);
+  margin-right: 8px;
+  cursor: pointer;
+  display: inline-block;
+}
+.color-option:focus {
+  outline: 3px solid rgba(66,153,225,0.24);
+  outline-offset: 2px;
+}
 
 /* Interactive Widgets */
 .interactive-widgets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
@@ -452,6 +507,12 @@ input:checked + .slider-round:before { transform: translateX(20px); }
 /* Make component-grid responsive per challenge */
 @media (max-width: 900px) {
   .component-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .panel-toggle { display: none; }
+  .panel-toggle-mobile { display: flex; }
+  .customization-panel { right: 8px; left: 8px; width: calc(100% - 16px); }
 }
 
 /* ========== PRESERVED WIDGET STYLES ========== */

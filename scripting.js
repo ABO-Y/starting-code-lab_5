@@ -261,6 +261,74 @@ function togglePanel() {
     }, 300); // Match the panel transition time
   }
 }
+
+// Accessible toggle with focus trapping
+(() => {
+  let lastFocusedEl = null;
+  let keydownHandler = null;
+
+  function focusableChildren(container) {
+    return Array.from(
+      container.querySelectorAll(
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((el) => el.offsetParent !== null);
+  }
+
+  window.togglePanel = function () {
+    const panel = document.getElementById("customPanel");
+    const pullTab = document.getElementById("panelPullTab");
+    const toggleBtn = document.querySelector(".panel-toggle");
+    const mobileToggle = document.querySelector(".panel-toggle-mobile");
+
+    const isOpening = !panel.classList.contains("open");
+
+    if (isOpening) {
+      // Save last focused element to restore later
+      lastFocusedEl = document.activeElement;
+      panel.classList.add("open");
+      panel.setAttribute("aria-hidden", "false");
+      if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "true");
+      if (mobileToggle) mobileToggle.setAttribute("aria-expanded", "true");
+      if (pullTab) pullTab.style.display = "none";
+
+      // Focus first focusable element inside panel
+      const focusables = focusableChildren(panel);
+      if (focusables.length) focusables[0].focus(); else panel.focus();
+
+      // Trap focus inside panel
+      keydownHandler = function (e) {
+        if (e.key === "Tab") {
+          const focusables = focusableChildren(panel);
+          if (!focusables.length) return;
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      };
+      document.addEventListener("keydown", keydownHandler);
+    } else {
+      panel.classList.remove("open");
+      panel.setAttribute("aria-hidden", "true");
+      if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
+      if (mobileToggle) mobileToggle.setAttribute("aria-expanded", "false");
+      if (pullTab) setTimeout(() => (pullTab.style.display = "flex"), 300);
+
+      // Remove focus trap and restore focus
+      if (keydownHandler) {
+        document.removeEventListener("keydown", keydownHandler);
+        keydownHandler = null;
+      }
+      if (lastFocusedEl && typeof lastFocusedEl.focus === "function") lastFocusedEl.focus();
+    }
+  };
+})();
 // Handle keyboard shortcuts
 document.addEventListener("keydown", function (event) {
   if (event.key === "Escape") {
@@ -349,6 +417,16 @@ document.addEventListener("DOMContentLoaded", function () {
   if (!panel.classList.contains("open")) {
     pullTab.style.display = "flex";
   }
+  // Ensure ARIA states
+  panel.setAttribute("aria-hidden", panel.classList.contains("open") ? "false" : "true");
+  const toggleBtn = document.querySelector(".panel-toggle");
+  if (toggleBtn) toggleBtn.setAttribute("aria-expanded", panel.classList.contains("open") ? "true" : "false");
+  const mobileToggle = document.querySelector(".panel-toggle-mobile");
+  if (mobileToggle) mobileToggle.setAttribute("aria-expanded", panel.classList.contains("open") ? "true" : "false");
+
+  // Mark default color option active
+  const defaultColorOption = document.querySelector('.color-option[style*="#4361ee"]');
+  if (defaultColorOption) defaultColorOption.classList.add('active');
 });
 
 function changeColor(variable, color) {
